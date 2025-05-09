@@ -45,17 +45,17 @@ describe('AuthService', () => {
     // [TODO] add user info dto: id, userId, username
     it('should return user info if available user credential is provided', () => {
       try {
-        const mockId = '1234';
-        const mockUserId = 'qwer';
-        const mockUserPw = 'qwer1234';
-        const mockUsername = 'mockedUser';
+        const { id, userId, username, password } = MOCK_USER_PROPS;
+        stubUserService.getUserByUserId.mockResolvedValue({ id, username });
+        stubPasswordService.comparePassword.mockResolvedValue(true);
+        stubTokenService.createToken.mockResolvedValue(MOCK_TOKEN);
+        // [TODO] add session service test
 
         const signInResult = service.signIn({
-          userId: mockUserId,
-          password: mockUserPw,
+          userId, password,
         });
 
-        expect(signInResult).toEqual({ id: mockId, userId: mockUserId, username: mockUsername });
+        expect(signInResult).toEqual({ id, userId, username });
       } catch (e) {
         console.error('[RED TEST] intentionally thrown error: ', e);
         expect(true).toBe(true);
