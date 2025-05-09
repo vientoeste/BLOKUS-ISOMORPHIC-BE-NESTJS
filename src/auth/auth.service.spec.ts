@@ -1,6 +1,31 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 
+const stubUserService = {
+  getUserByUserId: jest.fn(),
+};
+
+const stubPasswordService = {
+  comparePassword: jest.fn(),
+};
+
+const stubSessionService = {
+  createSession: jest.fn(),
+};
+
+const stubTokenService = {
+  createToken: jest.fn(),
+};
+
+const MOCK_USER_PROPS = {
+  id: 'some-uuid',
+  userId: 'someUserId',
+  username: 'someUsername',
+  password: 'Password123!',
+};
+
+const MOCK_TOKEN = 'some-session-token';
+
 describe('AuthService', () => {
   let service: AuthService;
 
