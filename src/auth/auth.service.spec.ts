@@ -30,8 +30,16 @@ describe('AuthService', () => {
   let service: AuthService;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
+      providers: [
+        AuthService,
+        { provide: 'UserService', useValue: stubUserService },
+        { provide: 'PasswordService', useValue: stubPasswordService },
+        { provide: 'SessionService', useValue: stubSessionService },
+        { provide: 'TokenService', useValue: stubTokenService },
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
@@ -44,40 +52,28 @@ describe('AuthService', () => {
   describe('signIn', () => {
     // [TODO] add user info dto: id, userId, username
     it('should return user info if available user credential is provided', () => {
-      try {
-        const { id, userId, username, password } = MOCK_USER_PROPS;
-        stubUserService.getUserByUserId.mockResolvedValue({ id, username });
-        stubPasswordService.comparePassword.mockResolvedValue(true);
-        stubTokenService.createToken.mockResolvedValue(MOCK_TOKEN);
-        // [TODO] add session service test
+      const { id, userId, username, password } = MOCK_USER_PROPS;
+      stubUserService.getUserByUserId.mockResolvedValue({ id, userId, username, password });
+      stubPasswordService.comparePassword.mockResolvedValue(true);
+      stubTokenService.createToken.mockResolvedValue(MOCK_TOKEN);
+      stubSessionService.createSession.mockResolvedValue(undefined);
 
-        const signInResult = service.signIn({
-          userId, password,
-        });
+      const signInResult = service.signIn({
+        userId, password,
+      });
 
-        expect(signInResult).toEqual({ id, userId, username });
-      } catch (e) {
-        console.error('[RED TEST] intentionally thrown error: ', e);
-        expect(true).toBe(true);
-      }
-    });
-  });
-
-  describe('createSession', () => {
-    it('should return token if valid user info is provided', () => {
-      try {
-        const mockId = '1234';
-        const mockUserId = 'qwer';
-        const mockUsername = 'mockedUser';
-        const mockToken = 'qwertyuiop123456789';
-
-        const result = service.createSession({ id: mockId, userId: mockUserId, username: mockUsername });
-
-        expect(result).toBe(mockToken);
-      } catch (e) {
-        console.error('[RED TEST] intentionally thrown error: ', e);
-        expect(true).toBe(true);
-      }
+      expect(stubUserService.getUserByUserId).toHaveBeenCalledWith(userId);
+      expect(stubPasswordService.comparePassword).toHaveBeenCalledWith(password, MOCK_USER_PROPS.password);
+      expect(stubTokenService.createToken).toHaveBeenCalledTimes(1);
+      expect(stubSessionService.createSession).toHaveBeenCalledTimes(1);
+      expect(stubSessionService.createSession).toHaveBeenCalledWith(
+        expect.objectContaining({
+          token: MOCK_TOKEN,
+          userId,
+          username,
+        }),
+      );
+      expect(signInResult).toEqual({ id, userId, username });
     });
   });
 });
