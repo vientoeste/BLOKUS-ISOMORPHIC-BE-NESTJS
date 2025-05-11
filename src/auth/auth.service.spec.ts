@@ -51,14 +51,14 @@ describe('AuthService', () => {
 
   describe('signIn', () => {
     // [TODO] add user info dto: id, userId, username
-    it('should return user info if available user credential is provided', () => {
+    it('should return user info if available user credential is provided', async () => {
       const { id, userId, username, password } = MOCK_USER_PROPS;
       stubUserService.getUserByUserId.mockResolvedValue({ id, userId, username, password });
       stubPasswordService.comparePassword.mockResolvedValue(true);
       stubTokenService.createToken.mockResolvedValue(MOCK_TOKEN);
       stubSessionService.createSession.mockResolvedValue(undefined);
 
-      const signInResult = service.signIn({
+      const signInResult = await service.signIn({
         userId, password,
       });
 
