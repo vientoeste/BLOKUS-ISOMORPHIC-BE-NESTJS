@@ -32,7 +32,7 @@ export class AuthService {
       throw new Error('Invalid credentials');
     }
 
-    const token = await this.tokenService.createToken();
+    const token = this.tokenService.createToken();
     await this.sessionService.createSession({
       token,
       userId: user.userId,

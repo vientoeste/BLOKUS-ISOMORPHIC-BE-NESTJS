@@ -1,3 +1,3 @@
 export interface TokenService {
-  createToken(): Promise<string>;
+  createToken(): string;
 }
