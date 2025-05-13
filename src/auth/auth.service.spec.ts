@@ -55,7 +55,7 @@ describe('AuthService', () => {
       const { id, userId, username, password } = MOCK_USER_PROPS;
       stubUserService.getUserByUserId.mockResolvedValue({ id, userId, username, password });
       stubPasswordService.comparePassword.mockResolvedValue(true);
-      stubTokenService.createToken.mockResolvedValue(MOCK_TOKEN);
+      stubTokenService.createToken.mockReturnValue(MOCK_TOKEN);
       stubSessionService.createSession.mockResolvedValue(undefined);
 
       const signInResult = await service.signIn({
